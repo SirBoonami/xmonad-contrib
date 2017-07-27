@@ -128,6 +128,9 @@ instance (LayoutClass l (), LayoutClass l1 a, LayoutClass l2 a, Read a, Show a, 
     description (C2 _ _ super l1 l2) = "combining "++ description l1 ++" and "++
                                        description l2 ++" with "++ description super
 
+    handleReload (C2 a b so l1o l2o) (C2 _ _ sn l1n l2n)
+        = C2 a b (handleReload so sn) (handleReload l1o l1n) (handleReload l2o l2n)
+
 
 differentiate :: Eq q => [q] -> [q] -> Maybe (Stack q)
 differentiate (z:zs) xs | z `elem` xs = Just $ Stack { focus=z

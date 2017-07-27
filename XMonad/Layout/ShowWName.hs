@@ -85,6 +85,8 @@ instance LayoutModifier ShowWName a where
         | Just Hide <- fromMessage m = return . Just $ SWN True c s
         | otherwise                  = return Nothing
 
+    handleReloadMod (SWN b _ s) (SWN _ c _) = SWN b c s
+
 doShow :: ShowWName a -> Rectangle -> [(a,Rectangle)] -> X ([(a, Rectangle)], Maybe (ShowWName a))
 doShow (SWN True  c (Just (_,w))) r wrs = deleteWindow w >> flashName c r wrs
 doShow (SWN True  c  Nothing    ) r wrs = flashName c r wrs

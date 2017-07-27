@@ -248,6 +248,16 @@ class (Show (m a), Read (m a)) => LayoutModifier m a where
         where "" <> x = x
               x <> y = x ++ " " ++ y
 
+
+    -- | @handleReloadMod old newDef@. When the xmonad config is reloaded,
+    -- create the new layout modifier from the state of the old and the config
+    -- of the new, if possible. Layouts without static internal config (e.g.
+    -- colors) can use the default implementation (@handleReloadMod = const@).
+    -- The calling of `handleReload` on the inner layout is managed by
+    -- `LayoutModifier`, there is no need to do it manually.
+    handleReloadMod :: m a -> m a -> m a
+    handleReloadMod = const
+
 -- | The 'LayoutClass' instance for a 'ModifiedLayout' defines the
 --   semantics of a 'LayoutModifier' applied to an underlying layout.
 instance (LayoutModifier m a, LayoutClass l a) => LayoutClass (ModifiedLayout m l) a where
@@ -268,6 +278,9 @@ instance (LayoutModifier m a, LayoutClass l a) => LayoutClass (ModifiedLayout m 
                     Just (Left m') -> Just $ (ModifiedLayout m') $ maybe l id ml'
                     _ -> (ModifiedLayout m) `fmap` ml'
     description (ModifiedLayout m l) = modifyDescription m l
+
+    handleReload (ModifiedLayout mo lo) (ModifiedLayout mn ln)
+        = ModifiedLayout (handleReloadMod mo mn) (handleReload lo ln)
 
 -- | A 'ModifiedLayout' is simply a container for a layout modifier
 --   combined with an underlying layout.  It is, of course, itself a

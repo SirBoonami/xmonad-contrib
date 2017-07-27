@@ -269,6 +269,9 @@ instance (LayoutClass l1 a, LayoutClass l2 a) => LayoutClass (NewSelect l1 l2) a
                     else Nothing
     handleMessage l m = passOnM m l
 
+    handleReload (NewSelect b o1 o2) (NewSelect _ n1 n2)
+        = NewSelect b (handleReload o1 n1) (handleReload o2 n2)
+
 swap :: (LayoutClass l1 a, LayoutClass l2 a) => NewSelect l1 l2 a -> X (NewSelect l1 l2 a)
 swap l = sw `fmap` passOn (SomeMessage Hide) l
 
